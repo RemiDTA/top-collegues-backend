@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import dev.entite.Collegue;
+import dev.entite.Commentaire;
 import dev.repository.CollegueRepository;
+import dev.repository.CommentaireRepository;
 
 @RestController
 @RequestMapping("/collegues")
@@ -22,6 +24,8 @@ import dev.repository.CollegueRepository;
 public class collegueController {
 	@Autowired
 	CollegueRepository collegueRepo;
+	@Autowired
+	CommentaireRepository commentaireRepo;
 	
 	@GetMapping
 	public List<Collegue> listerCollegues(){
@@ -39,8 +43,36 @@ public class collegueController {
 		else
 		{
 			System.out.println("erreur doublon");
+			
 		}
 
+	}
+	
+	@PostMapping("/commentaires")
+	public void creerCommentaire(@RequestBody Commentaire com) {
+		//insertion du bulletin qui a été saisit par l'utilisateur
+		commentaireRepo.save(com);
+	}
+	
+	@GetMapping("/commentaires")
+	public List<Commentaire> listerCommentaire() {
+		//insertion du bulletin qui a été saisit par l'utilisateur
+		return commentaireRepo.findAll();
+	}
+	
+	@GetMapping("/{pseudo}/commentaires")
+	public List<Commentaire> listerCommentaire(@PathVariable String pseudo) {
+		//insertion du bulletin qui a été saisit par l'utilisateur
+		Collegue col = collegueRepo.findByPseudo(pseudo);
+		if (col==null)
+		{
+			System.out.println("erreur d'url");
+		}
+		else
+		{
+			return commentaireRepo.findByCol(col);
+		}
+		return null;
 	}
 	
 	@PatchMapping("/{pseudo}")
